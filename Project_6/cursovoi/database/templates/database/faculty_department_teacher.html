@@ -26,36 +26,42 @@
                     <!-- Разрыв между thead и tbody -->
                     <tr><td colspan="2" style="border: 0px; "></td></tr>
                     <tbody>
-                        {% for department in faculty.departments.all %}
+    {% for department in faculty.departments.all %}
+        <tr>
+            <td colspan="2" class="department"><h4>{{ department.name }}</h4></td>
+        </tr>
+        {% with department.teachers.all as teachers %}
+            {% if teachers|length > 0 %}
+                {% for teacher in teachers %}
+                    {% if teacher.post != "Декан" %}
+                        {% if teacher.post == "Заведующий кафедрой" %}
                             <tr>
-                                <td colspan="2" class="department"><h4>{{ department.name }}</h4></td>
+                                <td><a href="{% url 'teachers-detail' teacher.id %}">{{ teacher.last_name }} {{ teacher.first_name }} {{ teacher.father_name }}</a></td>
+                                <td>{{ teacher.post }}</td>
                             </tr>
-                            {% for teacher in department.teachers.all %}
-                                {% if teacher.post != "Декан" %}
-                                    {% if teacher.post == "Заведующий кафедрой" %}
-                                        <tr>
-                                            <td><a href="{% url 'teachers-detail' teacher.id %}">{{ teacher.last_name }} {{ teacher.first_name }} {{ teacher.father_name }}</a></td>
-                                            <td>{{ teacher.post }}</td>
-                                        </tr>
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                            {% for teacher in department.teachers.all %}
-                                {% if teacher.post != "Декан" %}
-                                    {% if teacher.post != "Заведующий кафедрой" %}
-                                        <tr>
-                                            <td><a href="{% url 'teachers-detail' teacher.id %}">{{ teacher.last_name }} {{ teacher.first_name }} {{ teacher.father_name }}</a></td>
-                                            <td>{{ teacher.post }}</td>
-                                        </tr>
-                                    {% endif %}
-                                {% endif %}
-                            {% endfor %}
-                        {% endfor %}
-                    </tbody>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+                {% for teacher in teachers %}
+                    {% if teacher.post != "Декан" and teacher.post != "Заведующий кафедрой" %}
+                        <tr>
+                            <td><a href="{% url 'teachers-detail' teacher.id %}">{{ teacher.last_name }} {{ teacher.first_name }} {{ teacher.father_name }}</a></td>
+                            <td>{{ teacher.post }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="2">Нет информации о преподавателях.</td>
+                </tr>
+            {% endif %}
+        {% endwith %}
+    {% endfor %}
+</tbody>
                 </table>
             {% else %}
                 <!-- Сообщение, если нет информации -->
-                <p>Нет информации о преподавателях.</p>
+                <p>Нет информации о кафедрах.</p>
             {% endif %}
         {% endfor %}
     </div>
