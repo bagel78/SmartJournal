@@ -350,6 +350,7 @@ def grade_management(request):
     selected_subject = None
     selected_group = None
     formset = None
+    groups = Groups.objects.none()
 
     # GET-запрос (выбор предмета/группы)
     if request.method == 'GET':
@@ -394,6 +395,11 @@ def grade_management(request):
         selected_subject = get_object_or_404(Subjects, pk=request.POST.get('subject'))
         selected_group = get_object_or_404(Groups, pk=request.POST.get('group'))
         students = Students.objects.filter(group=selected_group)
+
+        groups = Groups.objects.filter(
+            curriculum__subject_id=selected_subject,
+            curriculum__teacher_id=teacher
+        ).distinct()
 
         GradeFormSet = modelformset_factory(
             Grades,
